@@ -58,10 +58,23 @@ print_all :: proc(l: ^Xor_List($T)) {
 	}
 }
 
+destroy :: proc(l: ^Xor_List($T)) {
+	prev: uintptr = 0
+	curr := l.head
+	for curr != nil {
+		next := ptr(curr.npx ~ prev, T)
+		prev = addr(curr)
+		free(curr)
+		curr = next
+	}
+	l^ = {}
+}
+
 main :: proc() {
 	fmt.println("introducing xor linked list...")
 
 	l: Xor_List(int)
+	defer destroy(&l)
 	push_back(&l, 1)
 	push_back(&l, 2)
 	push_back(&l, 3)
